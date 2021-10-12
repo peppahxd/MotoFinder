@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 id="question" class="display-4">Ready to start?</h1>
+    <div id="options">
+
+    </div>
+
+    <button id="next">Next</button>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        var questionIndex = 0;
+        var optionVal = "";
+
+        $('#next').click(function () {
+            
+
+            if (questionIndex > 0) {
+                $('#options').children().each(function () {
+                    if ($(this).attr("picked") == "true") {
+                        optionVal = $(this).html();
+                    }    
+                })
+            }
+
+            $('#options').empty();
+            $.post("/Home/NewQuestion", { questionId: questionIndex, option: optionVal }, function (dataArr) {
+                console.dir(dataArr);
+                console.log(optionVal);
+                questionIndex++;
+                
+                var question = dataArr;
+                for (let i = 0; i < question.options.length; i++) {
+                    var span = document.createElement('span');
+                    var br = document.createElement('br');
+                    var option = question.options[i];
+
+                    span.innerHTML = option;
+
+                    $(span).attr('picked', 'false');
+                    $(span).click(function () {
+                        if ($(this).attr('picked') == 'false') {
+                            $(this).attr('picked', 'true');
+                        }
+                            
+                        else
+                            $(this).attr('picked', 'false');
+                    })
+
+                    $('#options').append(span);
+                    $(br).insertAfter(span);
+                }
+                
+            });
+
+        });
+    });
+
+</script>
+
+
+
